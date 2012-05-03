@@ -108,8 +108,10 @@
     Grid *grid = [self.grids getGridWithX:point.x withY:point.y];
     switch (self.gridType) {
         case StartGrid:
-            [self.startGrid setColor:[NSColor whiteColor]];
-            [self.startGrid setGridType:NormalGrid];
+            if (self.startGrid.gridType == StartGrid) {
+                [self.startGrid setColor:[NSColor whiteColor]];
+                [self.startGrid setGridType:NormalGrid];
+            }
             self.startGrid = grid;
             [self.startGrid setColor:[NSColor redColor]];
             [self.startGrid setGridType:StartGrid];
@@ -125,8 +127,10 @@
             }
             break;
         case EndGrid:
-            [self.endGrid setColor:[NSColor whiteColor]];
-            [self.endGrid setGridType:NormalGrid];
+            if (self.endGrid.gridType == EndGrid) {
+                [self.endGrid setColor:[NSColor whiteColor]];
+                [self.endGrid setGridType:NormalGrid];
+            }
             self.endGrid = grid;
             [self.endGrid setColor:[NSColor purpleColor]];
             [self.endGrid setGridType:EndGrid];

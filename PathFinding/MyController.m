@@ -90,6 +90,10 @@
             break;
         case 1:
             self.algo.algorithmType = AStarAlgorithm;
+            break;
+        case 2:
+            self.algo.algorithmType = FudgeAlgorithm;
+            break;
         default:
             break;
     }
