@@ -9,22 +9,33 @@
 #import <Foundation/Foundation.h>
 
 typedef enum {
-    DijkstraAlgorithm,AStarAlgorithm, FudgeAlgorithm
+    DijkstraAlgorithm,AStarAlgorithm, FudgeAlgorithm,
+    JumpPointSearchAlgorithmType
 }AlgorithmType;
+
+typedef enum{
+    UpMove, DownMove, LeftMove, RightMove,
+    LeftUpMove, LeftDownMove, RightUpMove, RightDownMove 
+}MoveDirection;
+
+
 
 @class Grid, Grids, MyView;
 
 @interface Algorithms : NSObject
 
 @property (nonatomic, retain)Grids *grids;
-@property (nonatomic)int algorithmType;
+@property (nonatomic)AlgorithmType algorithmType;
 @property (nonatomic, retain)MyView* gridView;
+@property (nonatomic, retain)Grid *startGrid;
+@property (nonatomic, retain)Grid *endGrid;
 
 - (void)runAlgorithmWithStartGrid:(Grid*)startGrid withEndGrid:(Grid*)endGrid;
-- (void)DijkstraWithStartGrid:(Grid*)startGrid withEndGrid:(Grid*)endGrid;
-- (void)AStarWithStartGrid:(Grid*)startGrid withEndGrid:(Grid*)endGrid;
-- (void)FudgeWithStartGrid:(Grid*)startGrid withEndGrid:(Grid*)endGrid;
-- (int)ManhattanHeuristic:(Grid*)currentGrid withEndGrid:(Grid*)endGrid;
-- (int)ManhattanHeuristicWithStartGrid:(Grid*)startGird currentGrid:(Grid*)currentGrid endGrid:(Grid*)endGrid;
+- (void)Dijkstra;
+- (void)AStar;
+- (void)Fudge;
+- (int)ManhattanHeuristic:(Grid*)currentGrid;
+- (int)ManhattanHeuristicOfFudge:(Grid*)currentGrid;
 - (NSMutableArray*)getFourAdjacentGrid:(Grid*)currentGrid;
+
 @end

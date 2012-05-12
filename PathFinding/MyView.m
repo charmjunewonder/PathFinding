@@ -22,6 +22,7 @@
 @synthesize rectArray = _rectArray;
 @synthesize colorArray = _colorArray;
 @synthesize arraySize = _arraySize;
+@synthesize pathLine = _pathLine;
 
 - (id)initWithFrame:(NSRect)frame
 {
@@ -53,6 +54,8 @@
                                                      saturation: 1
                                                      brightness: 0.8
                                                           alpha: 1];
+            }else if(grid.gridType == UnaccessableGrid){
+                colorArray[i] = [NSColor blackColor];
             }else{
                 colorArray[i] = grid.color;
             }
@@ -87,8 +90,10 @@
         }
  
     }
-
     
+    [[NSColor yellowColor] set]; 
+    [self.pathLine stroke];    
+
     
     //NSString *string = [NSString stringWithFormat:@"%d", 10];
     //[string drawAtPoint:CGPointMake(0, 0) withAttributes:nil];
@@ -101,11 +106,30 @@
 
 }
 
+- (void)redrawPathLine{
+    self.pathLine = [NSBezierPath bezierPath];
+    NSBezierPath *path = self.pathLine;
+    [path setLineWidth: 2];
+    
+    NSPoint startPoint = {self.endGrid.pointOfGrid.x*22+11, self.endGrid.pointOfGrid.y*22+11};
+    [path  moveToPoint: startPoint];    
+    
+    
+    Grid *fromNode = self.endGrid;
+    NSAssert(self.startGrid.fromGrid == nil, @"(%.0f, .0f)\n", self.startGrid.fromGrid.pointOfGrid.x, self.startGrid.fromGrid.pointOfGrid.y);
+    while (fromNode.fromGrid && fromNode != self.startGrid) {
+        fromNode = fromNode.fromGrid;
+        NSPoint endPoint   = {fromNode.pointOfGrid.x*22+11, fromNode.pointOfGrid.y*22+11};
+        [path lineToPoint:endPoint];
+    }
+
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
     NSPoint eventLocation = [event locationInWindow];
     CGPoint point = [self.grids getGridPointWithX:eventLocation.x withY:eventLocation.y];
-    Grid *grid = [self.grids getGridWithX:point.x withY:point.y];
+    Grid *grid = [self.grids getGridWithGridX:point.x withGridY:point.y];
     switch (self.gridType) {
         case StartGrid:
             if (self.startGrid.gridType == StartGrid) {

@@ -12,6 +12,7 @@
 
 @synthesize gridType = _gridType;
 @synthesize rect = _rect;
+@synthesize pointOfGrid = _pointOfGrid;
 @synthesize color = _color;
 @synthesize movementCost = _movementCost;
 @synthesize gridState = _gridState;

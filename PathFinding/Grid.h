@@ -24,10 +24,11 @@ typedef enum{
 @interface Grid : NSObject
 
 @property (nonatomic)CGRect rect;
+@property (nonatomic)CGPoint pointOfGrid;
 @property (nonatomic, retain)NSColor *color;
-@property (nonatomic)int gridType;
+@property (nonatomic)GridType gridType;
 @property (nonatomic)int movementCost;
 @property (nonatomic)int movementCostWithHeuristic;
-@property (nonatomic)int gridState;
+@property (nonatomic)GridState gridState;
 @property (nonatomic, retain)Grid* fromGrid;
 @end

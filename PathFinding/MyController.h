@@ -22,5 +22,6 @@
 - (IBAction)startPathFinding:(id)sender;
 - (IBAction)clear:(id)sender;
 - (IBAction)setAlgorithm:(id)sender;
+- (void)readFromMap;
 
 @end

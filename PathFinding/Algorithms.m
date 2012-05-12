@@ -10,17 +10,21 @@
 #import "Grid.h"
 #import "Grids.h"
 #import "MyView.h"
+#import "Heap.h"
+#import "JumpPointSearchAlgorithm.h"
 
 @implementation Algorithms
 
 @synthesize grids = _grids;
 @synthesize algorithmType = _algorithmType;
 @synthesize gridView = _gridView;
+@synthesize startGrid = _startGrid;
+@synthesize endGrid = _endGrid;
 
 // prefer straight line
-- (int)ManhattanHeuristic:(Grid*)currentGrid withEndGrid:(Grid*)endGrid{
-    CGPoint curPoint = [self.grids getGridPointWithX:currentGrid.rect.origin.x withY:currentGrid.rect.origin.y];
-    CGPoint endPoint = [self.grids getGridPointWithX:endGrid.rect.origin.x withY:endGrid.rect.origin.y];
+- (int)ManhattanHeuristic:(Grid*)currentGrid{
+    CGPoint curPoint = currentGrid.pointOfGrid;
+    CGPoint endPoint = self.endGrid.pointOfGrid;
 
     //return (abs(currentGrid.rect.origin.x-endGrid.rect.origin.x) +
       //      abs(currentGrid.rect.origin.y-endGrid.rect.origin.y))*0.01;
@@ -28,19 +32,22 @@
 }
 
 // prefer more curly path
-- (int)ManhattanHeuristicWithStartGrid:(Grid*)startGird currentGrid:(Grid*)currentGrid endGrid:(Grid*)endGrid{
+- (int)ManhattanHeuristicOfFudge:(Grid*)currentGrid{
+    Grid *startGrid = self.startGrid;
+    Grid *endGrid = self.endGrid;
+    
     CGPoint curPoint = [self.grids getGridPointWithX:currentGrid.rect.origin.x withY:currentGrid.rect.origin.y];
     CGPoint endPoint = [self.grids getGridPointWithX:endGrid.rect.origin.x withY:endGrid.rect.origin.y];
-    CGPoint startPoint = [self.grids getGridPointWithX:startGird.rect.origin.x withY:startGird.rect.origin.y];
+    CGPoint startPoint = [self.grids getGridPointWithX:startGrid.rect.origin.x withY:startGrid.rect.origin.y];
     
     int dx1 = curPoint.x - endPoint.x;
     int dy1 = curPoint.y - endPoint.y;
     int dx2 = startPoint.x - endPoint.x;
     int dy2 = startPoint.y - endPoint.y;
     int cross = abs(dx1*dy2 - dx2*dy1);
-    //printf("%d ", cross);
+    //printf("%d ", (abs(dx1) + abs(dy1)) + cross/50);
     
-    return (abs(curPoint.x-endPoint.x) + abs(curPoint.y-endPoint.y)) + cross;
+    return (abs(dx1) + abs(dy1)) + cross/10;
 }
 
 - (NSArray*)getFourAdjacentGrid:(Grid*)currentGrid{
@@ -49,7 +56,7 @@
     for (int x = -1; x < 2; ++x)
         for (int y = -1; y < 2; ++y) {
             if (abs(x+y)==1) {
-                Grid *g = [self.grids getGridWithX:currentLocation.x+x withY:currentLocation.y+y];
+                Grid *g = [self.grids getGridWithGridX:currentLocation.x+x withGridY:currentLocation.y+y];
                 if (g && g.gridType != UnaccessableGrid) {
                     [adjacentGrids addObject:g];
                 }
@@ -63,23 +70,35 @@
     if (!startGrid || !endGrid) {
         return;
     }
+    
+    self.startGrid = startGrid;
+    self.endGrid = endGrid;
+    self.gridView.pathLine = [NSBezierPath bezierPath];
+ 
     switch (self.algorithmType) {
         case DijkstraAlgorithm:
-            [self DijkstraWithStartGrid:startGrid withEndGrid:endGrid];
+            [self Dijkstra];
             break;
         case AStarAlgorithm:
-            [self AStarWithStartGrid:startGrid withEndGrid:endGrid];
+            [self AStar];
             break;
         case FudgeAlgorithm:
-            [self FudgeWithStartGrid:startGrid  withEndGrid:endGrid];
+            [self Fudge];
+            break;
+        case JumpPointSearchAlgorithmType:
+            [[[JumpPointSearchAlgorithm alloc] initWithGrids:self.grids startGrid:self.startGrid endGrid:self.endGrid view:self.gridView] jumpPointSearch];
             break;
         default:
             break;
     }
+    [self.gridView redrawPathLine];
 }
 
-- (void)DijkstraWithStartGrid:(Grid*)startGrid withEndGrid:(Grid*)endGrid{
+- (void)Dijkstra{
     NSMutableArray *fakeQueue = [NSMutableArray arrayWithCapacity:50];
+    Grid *startGrid = self.startGrid;
+    Grid *endGrid = self.endGrid;
+    
     [fakeQueue addObject:startGrid];
     
     for(Grid *grid in self.grids.gridArray){
@@ -128,11 +147,14 @@
         fromNode.color = [NSColor yellowColor];
         [self.gridView setNeedsDisplay:YES];
         [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate: [NSDate date]];
-        [NSThread sleepForTimeInterval:0.05];
+        [NSThread sleepForTimeInterval:0.02];
     }
 }
 
-- (void)AStarWithStartGrid:(Grid*)startGrid withEndGrid:(Grid*)endGrid{
+- (void)AStar{
+    
+    Grid *startGrid = self.startGrid;
+    Grid *endGrid = self.endGrid;
     
     for(Grid *grid in self.grids.gridArray){
         grid.movementCost = 0;
@@ -145,77 +167,37 @@
     }
 
     
-    NSMutableArray *openList = [NSMutableArray arrayWithCapacity:200];
-    [openList addObject:startGrid];
+    Heap *openList = [[Heap alloc] init];
+    [openList push:startGrid];
     int refreshCount = 0;
-    while (endGrid.gridState != InCloseList && openList.count > 0) {
-        Grid *currentGrid = [openList objectAtIndex:0];
+    while (endGrid.gridState != InCloseList && ![openList isEmpty]) {
+        Grid *currentGrid = [openList pop];
         currentGrid.gridState = InCloseList;
-        [openList removeObject:currentGrid];
 
         NSArray *adjacentGrids = [self getFourAdjacentGrid:currentGrid];
         for (Grid *adjacentGrid in adjacentGrids){
             if (adjacentGrid.gridState == InCloseList) continue;
             if (adjacentGrid.gridState == NotProcessed){
                 adjacentGrid.movementCost = currentGrid.movementCost + 1;
-                adjacentGrid.movementCostWithHeuristic = [self ManhattanHeuristic:adjacentGrid withEndGrid:endGrid] + adjacentGrid.movementCost;
-                adjacentGrid.gridState = InOpenList;
+                adjacentGrid.movementCostWithHeuristic = [self ManhattanHeuristic:adjacentGrid] + adjacentGrid.movementCost;
                 adjacentGrid.fromGrid = currentGrid;
                 
-                int i = 0;
-                if (openList.count == 0) {
-                    [openList addObject:adjacentGrid];
-                }
-                else{
-                    int insertNum = (int)openList.count;
-                    for (Grid *g in openList){
-                        if (g.movementCostWithHeuristic > adjacentGrid.movementCostWithHeuristic) {
-                            insertNum = i;
-                            break;
-                        }
-                        i++;
-                    }
-                    [openList insertObject:adjacentGrid atIndex:insertNum];
-
-                    /*int num=0;
-                    for(Grid *grid in openList){
-                        printf("%d: %d\n", num, grid.movementCostWithHeuristic);
-                        num++;
-                    }
-                    printf("%d\n", adjacentGrid.movementCostWithHeuristic);
-                    
-                    
-                    num=0;
-                    for(Grid *grid in openList){
-                        printf("%d: %d\n", num, grid.movementCostWithHeuristic);
-                        num++;
-                    }
-                    printf("\n");*/
-
-                }
+                [openList push:adjacentGrid];
+                adjacentGrid.gridState = InOpenList;
             }
             else if(adjacentGrid.gridState == InOpenList){
                 //printf("%d > %d\n",1 + currentGrid.movementCost, adjacentGrid.movementCost);
                 if ((1 + currentGrid.movementCost) < adjacentGrid.movementCost) {
                     adjacentGrid.fromGrid = currentGrid;
                     adjacentGrid.movementCost = currentGrid.movementCost + 1;
-                    adjacentGrid.movementCostWithHeuristic = [self ManhattanHeuristic:adjacentGrid withEndGrid:endGrid] + adjacentGrid.movementCost;
+                    adjacentGrid.movementCostWithHeuristic = [self ManhattanHeuristic:adjacentGrid] + adjacentGrid.movementCost;
 
-                    openList = [[openList sortedArrayUsingComparator:^(id a, id b){
-                        int first = [a movementCostWithHeuristic];
-                        int second = [(Grid*)b movementCostWithHeuristic];
-                        if (first < second)
-                            return (NSComparisonResult)NSOrderedAscending;
-                        else if (first > second)
-                            return (NSComparisonResult)NSOrderedDescending;
-                        else 
-                            return (NSComparisonResult)NSOrderedSame;
-                    }] mutableCopy];
+                    [openList updateGrid:adjacentGrid];
                 }
             }
         }
         
-        if (refreshCount == 5) {
+        if (refreshCount == 10) {
             refreshCount = 0;
             [self.gridView setNeedsDisplay:YES];
             [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate: [NSDate date]];
@@ -230,13 +212,15 @@
         fromNode.color = [NSColor yellowColor];
         [self.gridView setNeedsDisplay:YES];
         [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate: [NSDate date]];
-        [NSThread sleepForTimeInterval:0.05];
+        [NSThread sleepForTimeInterval:0.02];
     }
     
 }
 
 // DRY!!!!! I will fix this later.
-- (void)FudgeWithStartGrid:(Grid*)startGrid withEndGrid:(Grid*)endGrid{
+- (void)Fudge{
+    Grid *startGrid = self.startGrid;
+    Grid *endGrid = self.endGrid;
     for(Grid *grid in self.grids.gridArray){
         grid.movementCost = 0;
         grid.movementCostWithHeuristic = 0;
@@ -247,73 +231,32 @@
         }
     }
     
-    
-    NSMutableArray *openList = [NSMutableArray arrayWithCapacity:200];
-    [openList addObject:startGrid];
+    Heap *openList = [[Heap alloc] init];
+    [openList push:startGrid];
     int refreshCount = 0;
-    while (endGrid.gridState != InCloseList && openList.count > 0) {
-        Grid *currentGrid = [openList objectAtIndex:0];
+    while (endGrid.gridState != InCloseList && ![openList isEmpty]) {
+        Grid *currentGrid = [openList pop];
         currentGrid.gridState = InCloseList;
-        [openList removeObject:currentGrid];
         
         NSArray *adjacentGrids = [self getFourAdjacentGrid:currentGrid];
         for (Grid *adjacentGrid in adjacentGrids){
             if (adjacentGrid.gridState == InCloseList) continue;
             if (adjacentGrid.gridState == NotProcessed){
                 adjacentGrid.movementCost = currentGrid.movementCost + 1;
-                adjacentGrid.movementCostWithHeuristic = [self ManhattanHeuristicWithStartGrid:startGrid currentGrid:adjacentGrid endGrid:endGrid] + adjacentGrid.movementCost;
-                adjacentGrid.gridState = InOpenList;
+                adjacentGrid.movementCostWithHeuristic = [self ManhattanHeuristicOfFudge:adjacentGrid] + adjacentGrid.movementCost;
                 adjacentGrid.fromGrid = currentGrid;
                 
-                int i = 0;
-                if (openList.count == 0) {
-                    [openList addObject:adjacentGrid];
-                }
-                else{
-                    int insertNum = (int)openList.count;
-                    for (Grid *g in openList){
-                        if (g.movementCostWithHeuristic > adjacentGrid.movementCostWithHeuristic) {
-                            insertNum = i;
-                            break;
-                        }
-                        i++;
-                    }
-                    [openList insertObject:adjacentGrid atIndex:insertNum];
-                    
-                    /*int num=0;
-                     for(Grid *grid in openList){
-                     printf("%d: %d\n", num, grid.movementCostWithHeuristic);
-                     num++;
-                     }
-                     printf("%d\n", adjacentGrid.movementCostWithHeuristic);
-                     
-                     
-                     num=0;
-                     for(Grid *grid in openList){
-                     printf("%d: %d\n", num, grid.movementCostWithHeuristic);
-                     num++;
-                     }
-                     printf("\n");*/
-                    
-                }
+                [openList push:adjacentGrid];
+                adjacentGrid.gridState = InOpenList;
             }
             else if(adjacentGrid.gridState == InOpenList){
                 //printf("%d > %d\n",1 + currentGrid.movementCost, adjacentGrid.movementCost);
                 if ((1 + currentGrid.movementCost) < adjacentGrid.movementCost) {
                     adjacentGrid.fromGrid = currentGrid;
                     adjacentGrid.movementCost = currentGrid.movementCost + 1;
-                    adjacentGrid.movementCostWithHeuristic = [self ManhattanHeuristicWithStartGrid:startGrid currentGrid:adjacentGrid endGrid:endGrid] + adjacentGrid.movementCost;
+                    adjacentGrid.movementCostWithHeuristic = [self ManhattanHeuristicOfFudge:adjacentGrid] + adjacentGrid.movementCost;
                     
-                    openList = [[openList sortedArrayUsingComparator:^(id a, id b){
-                        int first = [a movementCostWithHeuristic];
-                        int second = [(Grid*)b movementCostWithHeuristic];
-                        if (first < second)
-                            return (NSComparisonResult)NSOrderedAscending;
-                        else if (first > second)
-                            return (NSComparisonResult)NSOrderedDescending;
-                        else 
-                            return (NSComparisonResult)NSOrderedSame;
-                    }] mutableCopy];
+                    [openList updateGrid:adjacentGrid];
                 }
             }
         }
@@ -333,8 +276,10 @@
         fromNode.color = [NSColor yellowColor];
         [self.gridView setNeedsDisplay:YES];
         [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate: [NSDate date]];
-        [NSThread sleepForTimeInterval:0.05];
+        [NSThread sleepForTimeInterval:0.02];
     }
 }
+
+
 
 @end

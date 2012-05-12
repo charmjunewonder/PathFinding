@@ -7,12 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D146A2FA1553A789009E1E41 /* map.map in Resources */ = {isa = PBXBuildFile; fileRef = D146A2F91553A789009E1E41 /* map.map */; };
 		D1C2AC7D1550F91000887B2A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1C2AC7C1550F91000887B2A /* Cocoa.framework */; };
 		D1C2AC871550F91000887B2A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D1C2AC851550F91000887B2A /* InfoPlist.strings */; };
 		D1C2AC891550F91000887B2A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D1C2AC881550F91000887B2A /* main.m */; };
 		D1C2AC8D1550F91000887B2A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = D1C2AC8B1550F91000887B2A /* Credits.rtf */; };
 		D1C2AC901550F91000887B2A /* MainAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D1C2AC8F1550F91000887B2A /* MainAppDelegate.m */; };
 		D1C2AC931550F91100887B2A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = D1C2AC911550F91100887B2A /* MainMenu.xib */; };
+		D1DDF946155CF09600D057A2 /* JumpPointSearchAlgorithm.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DDF945155CF09600D057A2 /* JumpPointSearchAlgorithm.m */; };
+		D1DDF94A155D406B00D057A2 /* Heap.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DDF949155D406B00D057A2 /* Heap.m */; };
 		D1E22DCE15510B7D008EEFA7 /* MyView.m in Sources */ = {isa = PBXBuildFile; fileRef = D1E22DCD15510B7D008EEFA7 /* MyView.m */; };
 		D1E22DD215511554008EEFA7 /* Grid.m in Sources */ = {isa = PBXBuildFile; fileRef = D1E22DD115511554008EEFA7 /* Grid.m */; };
 		D1E22DD515511A50008EEFA7 /* Grids.m in Sources */ = {isa = PBXBuildFile; fileRef = D1E22DD415511A50008EEFA7 /* Grids.m */; };
@@ -21,6 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D146A2F91553A789009E1E41 /* map.map */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = map.map; sourceTree = "<group>"; };
 		D1C2AC781550F91000887B2A /* PathFinding.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PathFinding.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1C2AC7C1550F91000887B2A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		D1C2AC7F1550F91000887B2A /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -34,6 +38,10 @@
 		D1C2AC8E1550F91000887B2A /* MainAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainAppDelegate.h; sourceTree = "<group>"; };
 		D1C2AC8F1550F91000887B2A /* MainAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainAppDelegate.m; sourceTree = "<group>"; };
 		D1C2AC921550F91100887B2A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		D1DDF944155CF09600D057A2 /* JumpPointSearchAlgorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JumpPointSearchAlgorithm.h; sourceTree = "<group>"; };
+		D1DDF945155CF09600D057A2 /* JumpPointSearchAlgorithm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JumpPointSearchAlgorithm.m; sourceTree = "<group>"; };
+		D1DDF948155D406B00D057A2 /* Heap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Heap.h; sourceTree = "<group>"; };
+		D1DDF949155D406B00D057A2 /* Heap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Heap.m; sourceTree = "<group>"; };
 		D1E22DCC15510B7D008EEFA7 /* MyView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyView.h; sourceTree = "<group>"; };
 		D1E22DCD15510B7D008EEFA7 /* MyView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyView.m; sourceTree = "<group>"; };
 		D1E22DD015511554008EEFA7 /* Grid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Grid.h; sourceTree = "<group>"; };
@@ -97,6 +105,7 @@
 		D1C2AC821550F91000887B2A /* PathFinding */ = {
 			isa = PBXGroup;
 			children = (
+				D146A2F91553A789009E1E41 /* map.map */,
 				D1C2AC8E1550F91000887B2A /* MainAppDelegate.h */,
 				D1C2AC8F1550F91000887B2A /* MainAppDelegate.m */,
 				D1C2AC911550F91100887B2A /* MainMenu.xib */,
@@ -104,6 +113,10 @@
 				D1FF33C015515EC100D2A396 /* MyController.m */,
 				D1FF33C21551891E00D2A396 /* Algorithms.h */,
 				D1FF33C31551891E00D2A396 /* Algorithms.m */,
+				D1DDF948155D406B00D057A2 /* Heap.h */,
+				D1DDF949155D406B00D057A2 /* Heap.m */,
+				D1DDF944155CF09600D057A2 /* JumpPointSearchAlgorithm.h */,
+				D1DDF945155CF09600D057A2 /* JumpPointSearchAlgorithm.m */,
 				D1E22DCC15510B7D008EEFA7 /* MyView.h */,
 				D1E22DCD15510B7D008EEFA7 /* MyView.m */,
 				D1E22DD015511554008EEFA7 /* Grid.h */,
@@ -180,6 +193,7 @@
 				D1C2AC871550F91000887B2A /* InfoPlist.strings in Resources */,
 				D1C2AC8D1550F91000887B2A /* Credits.rtf in Resources */,
 				D1C2AC931550F91100887B2A /* MainMenu.xib in Resources */,
+				D146A2FA1553A789009E1E41 /* map.map in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -197,6 +211,8 @@
 				D1E22DD515511A50008EEFA7 /* Grids.m in Sources */,
 				D1FF33C115515EC100D2A396 /* MyController.m in Sources */,
 				D1FF33C41551891E00D2A396 /* Algorithms.m in Sources */,
+				D1DDF946155CF09600D057A2 /* JumpPointSearchAlgorithm.m in Sources */,
+				D1DDF94A155D406B00D057A2 /* Heap.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

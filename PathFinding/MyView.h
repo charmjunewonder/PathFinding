@@ -27,5 +27,7 @@ typedef enum{
 @property (nonatomic)NSRect *rectArray;
 @property (nonatomic, retain)NSMutableArray *colorArray;
 @property (nonatomic)int arraySize;
+@property (nonatomic, retain) NSBezierPath *pathLine;
 
+- (void)redrawPathLine;
 @end

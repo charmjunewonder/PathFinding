@@ -15,10 +15,16 @@
 @property (nonatomic, retain)NSMutableArray *gridArray;
 @property (nonatomic)NSRect *rectArray;
 @property (nonatomic, retain)NSMutableArray *colorArray;
+@property (nonatomic)int width;
+@property (nonatomic)int height;
+@property (nonatomic)int rowLength;
+@property (nonatomic)int columnLength;
 
 //- (NSRect *)getRectArray;
-- (NSRect)getGridRectWithX:(int)x withY:(int)y;
-- (Grid *)getGridWithX:(int)x withY:(int)y;
+- (NSRect)getGridRectWithGridX:(int)x withGridY:(int)y;
+- (Grid *)getGridWithGridX:(int)x withGridY:(int)y;
 - (CGPoint)getGridPointWithX:(int)x withY:(int)y;
+- (BOOL)isAccessableAtGridX:(int)x gridY:(int)y;
 //- (void)prepareGrids;
+- (BOOL)isInsideGridsAtGridX:(int)x gridY:(int)y;
 @end
